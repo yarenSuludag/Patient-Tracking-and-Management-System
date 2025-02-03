@@ -140,7 +140,7 @@ def create_appointment():
 
 ## Screenshots
 ### Web Application Interface
-![Web Application Screenshot](images1/FireShot Capture 001 - Hastane Yönetim Sistemi - [127.0.0.1].png)
+![Web Application Screenshot](images1/web_app_screenshot.png)
 
 ## References
 - Elmasri, R., & Navathe, S. B. (2010). *Fundamentals of Database Systems*. Addison-Wesley.
