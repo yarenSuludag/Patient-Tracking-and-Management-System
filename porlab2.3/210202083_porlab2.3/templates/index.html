@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hastane Yönetim Sistemi</title>
+    <style>
+        body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f0f0f0;
+}
+
+#container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.liste {
+    margin-bottom: 30px;
+}
+
+.liste ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.liste ul li {
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #ecf0f1;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.bildirim {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 15px;
+    background-color: #d5f5e3;
+    border: 1px solid #2ecc71;
+    color: #2ecc71;
+}
+
+input[type="text"],
+input[type="tel"],
+input[type="date"],
+input[type="number"],
+input[type="datetime-local"],
+input[type="file"],
+button {
+    width: calc(100% - 20px);
+    padding: 15px;
+    margin: 10px 0;
+    box-sizing: border-box;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+}
+
+button {
+    background-color: #3498db;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #2980b9;
+    transform: scale(1.05);
+}
+
+input[type="file"] {
+    padding-top: 18px;
+    padding-bottom: 18px;
+}
+
+.form-container {
+    margin-bottom: 30px;
+}
+
+.form-container h2 {
+    margin-top: 40px;
+}
+
+.form-container form {
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    background-color: #ecf0f1;
+}
+
+.form-container input[type="text"],
+.form-container input[type="tel"],
+.form-container input[type="date"],
+.form-container input[type="number"],
+.form-container input[type="datetime-local"] {
+    width: calc(100% - 30px);
+    padding: 15px;
+    border: 1px solid #bdc3c7;
+    border-radius: 25px;
+    font-size: 16px;
+}
+
+@media screen and (max-width: 600px) {
+    #container {
+        padding: 20px;
+    }
+
+    input[type="text"],
+    input[type="tel"],
+    input[type="date"],
+    input[type="number"],
+    input[type="datetime-local"],
+    input[type="file"],
+    button {
+        width: 100%;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>Hastane Yönetim Sistemi</h1>
+
+        <!-- Hasta Listesi -->
+        <h2>Tüm Hastalar</h2>
+        <div id="hastaListesi" class="liste"></div>
+
+        <!-- Doktor Listesi -->
+        <h2>Tüm Doktorlar</h2>
+        <div id="doktorListesi" class="liste"></div>
+
+        <!-- Randevu Listesi -->
+        <h2>Tüm Randevular</h2>
+        <div id="randevuListesi" class="liste"></div>
+
+        <!-- Tıbbi Rapor Listesi -->
+        <h2>Hastanın Tıbbi Raporları</h2>
+        <div id="tibbiRaporListesi" class="liste"></div>
+
+        <!-- Dosya Yükleme Formu -->
+        <h2>Dosya Yükleme</h2>
+        <form id="dosyaYukleFormu" method="POST" enctype="multipart/form-data">
+            <input type="file" name="dosya" id="dosya">
+            <button type="submit">Dosya Yükle</button>
+        </form>
+
+        <!-- Bildirimler -->
+        <div id="bildirimler" class="bildirim"></div>
+
+        <!-- Hasta Ekleme Formu -->
+        <h2>Hasta Ekle</h2>
+        <form id="hastaEkleFormu" method="POST">
+            <input type="text" name="ad" placeholder="Ad">
+            <input type="text" name="soyad" placeholder="Soyad">
+            <input type="date" name="dogum_tarihi" placeholder="Doğum Tarihi">
+            <input type="text" name="cinsiyet" placeholder="Cinsiyet">
+            <input type="tel" name="telefon" placeholder="Telefon Numarası">
+            <input type="text" name="adres" placeholder="Adres">
+            <button type="button" id="hastaEkleBtn">Hasta Ekle</button>
+        </form>
+
+        <!-- Hasta Silme Formu -->
+        <h2>Hasta Sil</h2>
+        <form id="hastaSilFormu" method="POST">
+            <input type="number" name="hasta_id" placeholder="Hasta ID">
+            <button type="button" id="hastaSilBtn">Hasta Sil</button>
+        </form>
+
+        <!-- Doktor Ekleme Formu -->
+        <h2>Doktor Ekle</h2>
+        <form id="doktorEkleFormu" method="POST">
+            <input type="text" name="ad" placeholder="Ad">
+            <input type="text" name="soyad" placeholder="Soyad">
+            <input type="text" name="uzmanlik_alani" placeholder="Uzmanlık Alanı">
+            <input type="text" name="calistigi_hastane" placeholder="Çalıştığı Hastane">
+            <button type="button" id="doktorEkleBtn">Doktor Ekle</button>
+        </form>
+
+        <!-- Doktor Silme Formu -->
+        <h2>Doktor Sil</h2>
+        <form id="doktorSilFormu" method="POST">
+            <input type="number" name="doktor_id" placeholder="Doktor ID">
+            <button type="button" id="doktorSilBtn">Doktor Sil</button>
+        </form>
+
+        <!-- Randevu Alma Formu -->
+        <h2>Randevu Al</h2>
+        <form id="randevuAlFormu" method="POST">
+            <input type="number" name="hasta_id" placeholder="Hasta ID">
+            <input type="number" name="doktor_id" placeholder="Doktor ID">
+            <input type="datetime-local" name="randevu_tarihi" placeholder="Randevu Tarihi">
+            <button type="button" id="randevuAlBtn">Randevu Al</button>
+        </form>
+
+        <!-- Randevu İptal Etme Formu -->
+        <h2>Randevu İptal Et</h2>
+        <form id="randevuIptalFormu" method="POST">
+            <input type="number" name="randevu_id" placeholder="Randevu ID">
+            <button type="button" id="randevuIptalBtn">Randevu İptal Et</button>
+        </form>
+
+        <!-- Tıbbi Rapor Ekleme Formu -->
+        <h2>Tıbbi Rapor Ekle</h2>
+        <form id="tibbiRaporEkleFormu" method="POST">
+            <input type="number" name="hasta_id" placeholder="Hasta ID">
+            <input type="text" name="rapor_icerigi" placeholder="Rapor İçeriği">
+            <input type="datetime-local" name="rapor_tarihi" placeholder="Rapor Tarihi">
+            <input type="text" name="rapor_sonucu" placeholder="Rapor Sonucu">
+            <button type="button" id="tibbiRaporEkleBtn">Tıbbi Rapor Ekle</button>
+        </form>
+
+        <!-- Hasta Bilgilerini Güncelleme Formu -->
+        <h2>Hasta Bilgilerini Güncelle</h2>
+        <form id="hastaGuncelleFormu" method="POST">
+            <input type="number" name="hasta_id" placeholder="Hasta ID">
+            <input type="text" name="ad" placeholder="Ad">
+            <input type="text" name="soyad" placeholder="Soyad">
+            <input type="date" name="dogum_tarihi" placeholder="Doğum Tarihi">
+            <input type="text" name="cinsiyet" placeholder="Cinsiyet">
+            <input type="tel" name="telefon" placeholder="Telefon Numarası">
+            <input type="text" name="adres" placeholder="Adres">
+            <button type="button" id="hastaGuncelleBtn">Hasta Bilgilerini Güncelle</button>
+        </form>
+
+        <!-- Doktor Bilgilerini Güncelleme Formu -->
+        <h2>Doktor Bilgilerini Güncelle</h2>
+        <form id="doktorGuncelleFormu" method="POST">
+            <input type="number" name="doktor_id" placeholder="Doktor ID">
+            <input type="text" name="ad" placeholder="Ad">
+            <input type="text" name="soyad" placeholder="Soyad">
+            <input type="text" name="uzmanlik_alani" placeholder="Uzmanlık Alanı">
+            <input type="text" name="calistigi_hastane" placeholder="Çalıştığı Hastane">
+            <button type="button" id="doktorGuncelleBtn">Doktor Bilgilerini Güncelle</button>
+        </form>
+
+        <!-- Randevu Bilgilerini Güncelleme Formu -->
+        <h2>Randevu Bilgilerini Güncelle</h2>
+        <form id="randevuGuncelleFormu" method="POST">
+            <input type="number" name="randevu_id" placeholder="Randevu ID">
+            <input type="datetime-local" name="randevu_tarihi" placeholder="Randevu Tarihi">
+            <button type="button" id="randevuGuncelleBtn">Randevu Bilgilerini Güncelle</button>
+        </form>
+
+        <!-- Tıbbi Rapor Bilgilerini Güncelleme Formu -->
+        <h2>Tıbbi Rapor Bilgilerini Güncelle</h2>
+        <form id="tibbiRaporGuncelleFormu" method="POST">
+            <input type="number" name="rapor_id" placeholder="Rapor ID">
+            <input type="text" name="rapor_icerigi" placeholder="Rapor İçeriği">
+            <input type="datetime-local" name="rapor_tarihi" placeholder="Rapor Tarihi">
+            <input type="text" name="rapor_sonucu" placeholder="Rapor Sonucu">
+            <button type="button" id="tibbiRaporGuncelleBtn">Tıbbi Rapor Bilgilerini Güncelle</button>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            // Tüm hastaları listeleme
+            function tumHastalariListele(){
+                $.ajax({
+                    type: 'GET',
+                    url: '/tum_hastalar',
+                    success: function(response){
+                        var hastalar = response.hastalar;
+                        var html = '<ul>';
+                        for(var i=0; i<hastalar.length; i++){
+                            html += '<li>' + hastalar[i].Ad + ' ' + hastalar[i].Soyad + '</li>';
+                        }
+                        html += '</ul>';
+                        $('#hastaListesi').html(html);
+                    }
+                });
+            }
+
+            // Tüm doktorları listeleme
+            function tumDoktorlariListele(){
+                $.ajax({
+                    type: 'GET',
+                    url: '/tum_doktorlar',
+                    success: function(response){
+                        var doktorlar = response.doktorlar;
+                        var html = '<ul>';
+                        for(var i=0; i<doktorlar.length; i++){
+                            html += '<li>' + doktorlar[i].Ad + ' ' + doktorlar[i].Soyad + ' - ' + doktorlar[i].UzmanlikAlani + '</li>';
+                        }
+                        html += '</ul>';
+                        $('#doktorListesi').html(html);
+                    }
+                });
+            }
+
+            // Tüm randevuları listeleme
+            function tumRandevulariListele(){
+                $.ajax({
+                    type: 'GET',
+                    url: '/tum_randevular',
+                    success: function(response){
+                        var randevular = response.randevular;
+                        var html = '<ul>';
+                        for(var i=0; i<randevular.length; i++){
+                            html += '<li>Randevu ID: ' + randevular[i].RandevuID + ', Hasta ID: ' + randevular[i].HastaID + ', Doktor ID: ' + randevular[i].DoktorID + ', Tarih: ' + randevular[i].RandevuTarihi + '</li>';
+                        }
+                        html += '</ul>';
+                        $('#randevuListesi').html(html);
+                    }
+                });
+            }
+
+            // Hasta ekleme butonu
+            $('#hastaEkleBtn').click(function(){
+                var ad = $('input[name="ad"]').val();
+                var soyad = $('input[name="soyad"]').val();
+                var dogumTarihi = $('input[name="dogum_tarihi"]').val();
+                var cinsiyet = $('input[name="cinsiyet"]').val();
+                var telefon = $('input[name="telefon"]').val();
+                var adres = $('input[name="adres"]').val();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/hasta_ekle',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        ad: ad,
+                        soyad: soyad,
+                        dogum_tarihi: dogumTarihi,
+                        cinsiyet: cinsiyet,
+                        telefon: telefon,
+                        adres: adres
+                    }),
+                    success: function(response){
+                        alert(response.message);
+                        tumHastalariListele();
+                    },
+                    error: function(xhr, status, error){
+                        var errorMessage = xhr.status + ': ' + xhr.statusText;
+                        alert('Error - ' + errorMessage);
+                    }
+                });
+            });
+
+            // Doktor ekleme butonu
+            $('#doktorEkleBtn').click(function(){
+                var ad = $('input[name="ad"]').val();
+                var soyad = $('input[name="soyad"]').val();
+                var uzmanlikAlani = $('input[name="uzmanlik_alani"]').val();
+                var calistigiHastane = $('input[name="calistigi_hastane"]').val();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/doktor_ekle',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        ad: ad,
+                        soyad: soyad,
+                        uzmanlik_alani: uzmanlikAlani,
+                        calistigi_hastane: calistigiHastane
+                    }),
+                    success: function(response){
+                        alert(response.message);
+                        tumDoktorlariListele();
+                    },
+                    error: function(xhr, status, error){
+                        var errorMessage = xhr.status + ': ' + xhr.statusText;
+                        alert('Error - ' + errorMessage);
+                    }
+                });
+            });
+
+            // Hasta silme butonu
+            $('#hastaSilBtn').click(function(){
+                var hastaID = $('input[name="hasta_id"]').val();
+
+                $.ajax({
+                    type: 'DELETE',
+                    url: '/hasta_sil/' + hastaID,
+                    success: function(response){
+                        alert(response.message);
+                        tumHastalariListele();
+                    },
+                    error: function(xhr, status, error){
+                        var errorMessage = xhr.status + ': ' + xhr.statusText;
+                        alert('Error - ' + errorMessage);
+                    }
+                });
+            });
+
+            // Doktor silme butonu
+            $('#doktorSilBtn').click(function(){
+                var doktorID = $('input[name="doktor_id"]').val();
+
+                $.ajax({
+                    type: 'DELETE',
+                    url: '/doktor_sil/' + doktorID,
+                    success: function(response){
+                        alert(response.message);
+                        tumDoktorlariListele();
+                    },
+                    error: function(xhr, status, error){
+                        var errorMessage = xhr.status + ': ' + xhr.statusText;
+                        alert('Error - ' + errorMessage);
+                    }
+                });
+            });
+
+            
+
+
+          $(document).ready(function(){
+    // Tüm hastaları listeleme
+    function tumHastalariListele(){
+        $.ajax({
+            type: 'GET',
+            url: '/tum_hastalar',
+            success: function(response){
+                var hastalar = response.hastalar;
+                var html = '<ul>';
+                for(var i=0; i<hastalar.length; i++){
+                    html += '<li>' + hastalar[i].Ad + ' ' + hastalar[i].Soyad + '</li>';
+                }
+                html += '</ul>';
+                $('#hastaListesi').html(html);
+            }
+        });
+    }
+
+    // Tüm doktorları listeleme
+    function tumDoktorlariListele(){
+        $.ajax({
+            type: 'GET',
+            url: '/tum_doktorlar',
+            success: function(response){
+                var doktorlar = response.doktorlar;
+                var html = '<ul>';
+                for(var i=0; i<doktorlar.length; i++){
+                    html += '<li>' + doktorlar[i].Ad + ' ' + doktorlar[i].Soyad + ' - ' + doktorlar[i].UzmanlikAlani + '</li>';
+                }
+                html += '</ul>';
+                $('#doktorListesi').html(html);
+            }
+        });
+    }
+
+    // Tüm randevuları listeleme
+    function tumRandevulariListele(){
+        $.ajax({
+            type: 'GET',
+            url: '/tum_randevular',
+            success: function(response){
+                var randevular = response.randevular;
+                var html = '<ul>';
+                for(var i=0; i<randevular.length; i++){
+                    html += '<li>Randevu ID: ' + randevular[i].RandevuID + ', Hasta ID: ' + randevular[i].HastaID + ', Doktor ID: ' + randevular[i].DoktorID + ', Tarih: ' + randevular[i].RandevuTarihi + '</li>';
+                }
+                html += '</ul>';
+                $('#randevuListesi').html(html);
+            }
+        });
+    }
+
+    // Sayfa yüklendiğinde tüm hastaları, doktorları ve randevuları listele
+    tumHastalariListele();
+    tumDoktorlariListele();
+    tumRandevulariListele();
+});
+
+        });
+    </script>
+</body>
+</html>
